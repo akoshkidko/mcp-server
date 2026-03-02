@@ -108,8 +108,8 @@ All settings are overridable via `REPOHEALTH_*` environment variables.
 |---------|---------|-------------|
 | `REPOHEALTH_PORT` | `8000` | Server port |
 | `REPOHEALTH_ALLOWED_ROOTS` | `["/workspace"]` | Paths the server may access |
-| `REPOHEALTH_SCORE_THRESHOLD_HEALTHY` | `0.8` | Score above which status is "healthy" |
-| `REPOHEALTH_SCORE_THRESHOLD_WARNING` | `0.5` | Score above which status is "warning" |
+| `REPOHEALTH_SCORE_THRESHOLD_HEALTHY` | `0.8` | Score above which status is `"healthy"` |
+| `REPOHEALTH_SCORE_THRESHOLD_WARNING` | `0.5` | Lower bound for `"needs_attention"` status (score between this value and `THRESHOLD_HEALTHY`); below this threshold → `"critical"` |
 
 ## Demo Project
 

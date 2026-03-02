@@ -41,9 +41,10 @@ junit*.xml
 # Docker
 .dockerignore
 
-# Logs
+# Logs — exclude runtime logs but keep demo fixture logs
 *.log
-demo_project/logs/*.log
+# Fixture logs in demo_project are intentional and must be tracked
+!demo_project/logs/*.log
 
 # Distribution / packaging
 *.tar.gz

@@ -1,0 +1,24 @@
+============================= test session starts ==============================
+platform linux -- Python 3.11.6, pytest-8.1.0, pluggy-1.4.0
+rootdir: /workspace/demo_project
+collected 6 items
+
+tests/test_auth.py ....                                                  [ 66%]
+tests/test_service.py .F                                                 [ 100%]
+
+=================================== FAILURES ===================================
+__________________________ test_create_user ____________________________________
+
+    def test_create_user():
+        result = create_user({"name": "Alex", "external_id": None})
+        # BUG: returns 500 — tracked in service.py HACK comment
+>       assert result["status_code"] == 200
+E       assert 500 == 200
+E       AssertionError: Expected 200 but got 500: external_id is required but was None
+
+tests/test_service.py:20: AssertionError
+------------------------------ Captured log call -------------------------------
+WARNING  demo_project.src.service:service.py:22 Skipping external_id validation
+=========================== short test summary info ============================
+FAILED tests/test_service.py::test_create_user - AssertionError: Expected 200 but got 500
+========================= 1 failed, 5 passed in 0.84s ==========================
