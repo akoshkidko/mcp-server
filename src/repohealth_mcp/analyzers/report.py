@@ -43,7 +43,7 @@ def build_project_health_report(
         exclude_globs: Exclusion globs forwarded to the tech debt scanner.
 
     Returns:
-        A ``HealthReport`` with scores for every available dimension.
+        A ``HealthReport`` with scores, top issues, and recommended actions.
 
     TODO: Add concurrency — run analyzers in parallel with asyncio.gather.
     TODO: Accept a callback / progress hook for long-running projects.
@@ -103,6 +103,9 @@ def build_project_health_report(
         threshold_warning=settings.score_threshold_warning,
     )
 
+    top_issues = _build_top_issues(tech_debt, ci_diagnosis, dep_summary)
+    recommended_actions = _build_recommended_actions(tech_debt, ci_diagnosis, dep_summary)
+
     return HealthReport(
         project_path=str(project_path),
         health_score=overall_score,
@@ -110,5 +113,95 @@ def build_project_health_report(
         tech_debt=tech_debt,
         ci_diagnosis=ci_diagnosis,
         dependencies=dep_summary,
+        top_issues=top_issues,
+        recommended_actions=recommended_actions,
         notes=notes,
     )
+
+
+# ── Issue + recommendation builders ──────────────────────────────────────────
+
+def _build_top_issues(
+    tech_debt: TechDebtSummary | None,
+    ci: LogDiagnosis | None,
+    deps: DependencySummary | None,
+) -> list[str]:
+    """Summarise the most important problems across all dimensions."""
+    issues: list[str] = []
+
+    if tech_debt:
+        high = tech_debt.by_severity.get("high", 0) + tech_debt.by_severity.get("critical", 0)
+        if high:
+            issues.append(
+                f"High-severity tech debt: {high} FIXME/BUG marker(s) require immediate attention"
+            )
+        if tech_debt.total_findings > 0:
+            issues.append(
+                f"Tech debt: {tech_debt.total_findings} annotation(s) across "
+                f"{tech_debt.scanned_files} file(s)"
+            )
+
+    if ci:
+        if ci.category == "test_assertion_failure":
+            issues.append(
+                f"Failing tests: assertion failures detected "
+                f"(confidence {ci.confidence:.0%})"
+            )
+        elif ci.category and ci.category != "":
+            issues.append(f"CI failure: {ci.category} (confidence {ci.confidence:.0%})")
+        if ci.error_count > 0:
+            issues.append(f"CI log: {ci.error_count} error line(s) in {Path(ci.log_path).name}")
+
+    if deps:
+        if deps.version_risk_count > 0:
+            issues.append(
+                f"Dependency risk: {deps.version_risk_count} package(s) with "
+                "wildcard / unpinned / wide-range version specs"
+            )
+        if deps.unknown_license_count > 0:
+            issues.append(
+                f"License risk: {deps.unknown_license_count} package(s) with unknown license"
+            )
+
+    return issues
+
+
+def _build_recommended_actions(
+    tech_debt: TechDebtSummary | None,
+    ci: LogDiagnosis | None,
+    deps: DependencySummary | None,
+) -> list[str]:
+    """Return a prioritised list of concrete fixes."""
+    actions: list[str] = []
+
+    # High/critical debt first
+    if tech_debt:
+        for finding in tech_debt.findings:
+            if finding.severity.value in ("critical", "high"):
+                snippet = finding.text[:70].rstrip()
+                actions.append(
+                    f"Fix {finding.marker} in {finding.file}:{finding.line} — {snippet}"
+                )
+            if len(actions) >= 3:
+                break
+
+    if ci:
+        if ci.category == "test_assertion_failure":
+            actions.append(
+                "Fix failing test assertions — check assert values match function return codes"
+            )
+        elif ci.error_count > 0:
+            actions.append("Investigate CI errors before merging to main branch")
+
+    if deps:
+        if deps.unpinned_count > 0:
+            actions.append(
+                f"Pin {deps.unpinned_count} unpinned dependency/ies to exact versions "
+                "to ensure reproducible builds"
+            )
+        if deps.unknown_license_count > 0:
+            actions.append(
+                "Audit packages with unknown license for legal compliance"
+            )
+
+    return actions

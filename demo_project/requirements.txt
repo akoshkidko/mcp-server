@@ -1,6 +1,11 @@
-# Demo project dependencies — intentionally sparse for now.
-# TODO: Populate with realistic pinned dependencies for demo fixtures.
-# Example (unpinned to trigger the dependency analyzer):
-# requests
-# flask>=2.0
-# sqlalchemy==2.0.0
+# Demo project Python dependencies.
+# Mix of pinned and unpinned to demonstrate dependency risk detection.
+
+# Pinned — safe
+requests==2.28.0
+
+# Unpinned — version risk: any version will be installed
+tenacity
+
+# Unpinned with lower bound — still risky
+flask>=2.0

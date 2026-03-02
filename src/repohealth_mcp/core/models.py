@@ -64,6 +64,9 @@ class LogDiagnosis(BaseModel):
     error_count: int = 0
     warning_count: int = 0
     summary: str = ""
+    # Failure classification produced by pattern analysis.
+    category: str = Field(default="", description="Detected failure category, e.g. 'test_assertion_failure'.")
+    confidence: float = Field(default=0.0, ge=0.0, le=1.0, description="Confidence in the category classification.")
 
 
 # ── Dependency models ─────────────────────────────────────────────────────────
@@ -75,6 +78,8 @@ class DependencyInfo(BaseModel):
     version_spec: str = Field(default="", description="Version specifier as declared.")
     manifest_file: str = Field(description="Source manifest filename.")
     is_dev: bool = False
+    license: str = Field(default="", description="SPDX license identifier or 'unknown'.")
+    risk_flags: list[str] = Field(default_factory=list, description="Risk labels e.g. 'unpinned', 'wildcard', 'wide_range'.")
     notes: list[str] = Field(default_factory=list)
 
 
@@ -86,6 +91,8 @@ class DependencySummary(BaseModel):
     total: int = 0
     dev_count: int = 0
     unpinned_count: int = 0
+    version_risk_count: int = Field(default=0, description="Dependencies with wildcard, unpinned, or wide-range version specs.")
+    unknown_license_count: int = Field(default=0, description="Dependencies with unknown or missing license information.")
     dependencies: list[DependencyInfo] = Field(default_factory=list)
     notes: list[str] = Field(default_factory=list)
 
@@ -103,6 +110,8 @@ class HealthReport(BaseModel):
     tech_debt: TechDebtSummary | None = None
     ci_diagnosis: LogDiagnosis | None = None
     dependencies: DependencySummary | None = None
+    top_issues: list[str] = Field(default_factory=list, description="Most important issues surfaced across all dimensions.")
+    recommended_actions: list[str] = Field(default_factory=list, description="Prioritised list of actionable fixes.")
     notes: list[str] = Field(default_factory=list)
     generated_at: datetime = Field(default_factory=datetime.utcnow)
 

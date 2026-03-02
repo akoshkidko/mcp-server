@@ -113,7 +113,17 @@ All settings are overridable via `REPOHEALTH_*` environment variables.
 
 ## Demo Project
 
-`demo_project/` contains a minimal placeholder repository used for integration testing and demonstrations.
+`demo_project/` contains a realistic fixture repository with intentional tech debt, a failing pytest log, and mixed dependency manifests.  It is baked into the Docker image at `/demo_project`.
+
+| Fixture | Purpose |
+|---------|---------|
+| `src/auth.py` | FIXME auth bypass + BUG token expiry → HIGH/CRITICAL debt findings |
+| `src/service.py` | HACK comment + 500/200 mismatch → tech debt + CI failure correlation |
+| `logs/pytest_failure.log` | Real pytest output with `assert 500 == 200` → `test_assertion_failure` |
+| `requirements.txt` + `package.json` | Pinned + unpinned deps + wildcard → version risks |
+| `metadata/licenses.json` | `legacy-lib: unknown` → unknown license detection |
+
+See `DEMO.md` for a complete 3–5 minute walkthrough using MCP Inspector.
 
 ## License
 

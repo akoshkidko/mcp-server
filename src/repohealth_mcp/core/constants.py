@@ -45,7 +45,8 @@ DEBT_MARKER_SEVERITY: dict[str, Severity] = {
 
 class HealthStatus(str, Enum):
     HEALTHY = "healthy"
-    WARNING = "warning"
+    NEEDS_ATTENTION = "needs_attention"   # score in warning band (0.5–0.8)
+    WARNING = "warning"                   # kept for backwards compatibility
     CRITICAL = "critical"
     UNKNOWN = "unknown"
 

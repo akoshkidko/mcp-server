@@ -96,5 +96,5 @@ def score_to_status(
     if score >= threshold_healthy:
         return HealthStatus.HEALTHY
     if score >= threshold_warning:
-        return HealthStatus.WARNING
+        return HealthStatus.NEEDS_ATTENTION
     return HealthStatus.CRITICAL
