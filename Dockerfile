@@ -10,6 +10,7 @@ RUN apt-get update \
 # Copy package metadata AND sources before pip so the non-editable install
 # can resolve and embed the package in a single reproducible step.
 COPY pyproject.toml ./
+COPY README.md ./
 COPY src/ ./src/
 
 # Install runtime dependencies only — no editable mode, no dev extras.
