@@ -1,0 +1,18 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "demo-app"
+version = "0.1.0"
+description = "Demo project for RepoHealth MCP integration testing"
+requires-python = ">=3.11"
+
+dependencies = [
+    # TODO: add realistic dependencies for demo fixtures
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+]

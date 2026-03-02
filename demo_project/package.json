@@ -1,0 +1,14 @@
+{
+  "name": "demo-app",
+  "version": "0.1.0",
+  "description": "Demo project for RepoHealth MCP integration testing",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "jest"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+  },
+  "notes": "TODO: populate with realistic dependencies for demo fixtures"
+}

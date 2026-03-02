@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.env
+.venv/
+venv/
+env/
+
+# Package managers
+node_modules/
+.npm/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+junit*.xml
+
+# Type checking
+.mypy_cache/
+.dmypy.json
+
+# Ruff
+.ruff_cache/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Docker
+.dockerignore
+
+# Logs
+*.log
+demo_project/logs/*.log
+
+# Distribution / packaging
+*.tar.gz
+*.whl
+
+# Secrets
+.env.local
+.env.*.local
+secrets.toml

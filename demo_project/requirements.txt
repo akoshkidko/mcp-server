@@ -1,0 +1,6 @@
+# Demo project dependencies — intentionally sparse for now.
+# TODO: Populate with realistic pinned dependencies for demo fixtures.
+# Example (unpinned to trigger the dependency analyzer):
+# requests
+# flask>=2.0
+# sqlalchemy==2.0.0
