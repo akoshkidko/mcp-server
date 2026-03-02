@@ -12,11 +12,21 @@ from pathlib import Path
 # ── Individual checks ────────────────────────────────────────────────────────
 
 def _check_demo_project_exists() -> tuple[bool, str]:
-    """Ensure the demo_project/ directory is present."""
-    demo_path = Path(__file__).resolve().parents[3] / "demo_project"
-    if demo_path.is_dir():
-        return True, f"demo_project/ found at {demo_path}"
-    return False, f"demo_project/ NOT found (expected at {demo_path})"
+    """Ensure the demo_project/ directory is present.
+
+    Searches in order:
+    1. Relative to this source file (src-layout: parents[2] = project root) — works in local dev.
+    2. /demo_project — the absolute path used inside the Docker container.
+    """
+    candidates = [
+        Path(__file__).resolve().parents[2] / "demo_project",
+        Path("/demo_project"),
+    ]
+    for demo_path in candidates:
+        if demo_path.is_dir():
+            return True, f"demo_project/ found at {demo_path}"
+    searched = ", ".join(str(p) for p in candidates)
+    return False, f"demo_project/ NOT found (searched: {searched})"
 
 
 def _check_analyzers_importable() -> tuple[bool, str]:

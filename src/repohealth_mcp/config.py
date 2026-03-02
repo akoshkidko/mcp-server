@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     # ── Path security ───────────────────────────────────────────────────────
     # Comma-separated list of filesystem roots the server is allowed to read.
     # Requests for paths outside these roots are rejected.
-    allowed_roots: list[str] = ["/workspace"]
+    allowed_roots: list[str] = ["/workspace", "/demo_project"]
 
     # ── Glob patterns ───────────────────────────────────────────────────────
     default_include_globs: list[str] = [

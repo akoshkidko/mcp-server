@@ -1,34 +1,41 @@
 # demo_project
 
-A minimal placeholder repository used for integration testing and demonstrations
+A realistic fixture repository used for integration testing and demonstrations
 of the RepoHealth MCP server.
 
 ## Purpose
 
 - Smoke tests verify that `demo_project/` is present and accessible.
-- Integration tests and demos will populate this directory with realistic
-  fixture files (source with TODOs, CI logs with errors, manifests with
-  real dependencies).
+- All four MCP tools are designed to run against this directory and produce
+  deterministic, meaningful outputs (see `DEMO.md` in the project root).
 
 ## Structure
 
 ```
 demo_project/
 ├── README.md           ← this file
-├── pyproject.toml      ← Python project stub
-├── requirements.txt    ← pinned Python dependencies stub
-├── package.json        ← Node.js stub
+├── pyproject.toml      ← Python project with unpinned deps for risk detection
+├── requirements.txt    ← mixed pinned/unpinned Python deps
+├── package.json        ← Node.js deps with wildcard and wide-range versions
 ├── Dockerfile          ← container stub
-├── src/                ← placeholder source directory
-├── tests/              ← placeholder test directory
-├── logs/               ← CI log fixtures go here
-├── docs/               ← documentation stubs
-└── metadata/           ← extra metadata stubs
+├── src/                ← source with intentional TODO/FIXME/HACK/BUG markers
+├── tests/              ← tests including one that intentionally fails
+├── logs/               ← CI log fixtures
+│   ├── pytest_failure.log        ← realistic pytest failure (assert 500 == 200)
+│   ├── npm_build_failure.log     ← npm error output
+│   └── docker_build_failure.log  ← Docker build error output
+├── docs/               ← notes with TODO markers
+└── metadata/
+    └── licenses.json   ← local license mapping (includes unknown entry)
 ```
 
-## Populating for Demos
+## Tool Outputs (summary)
 
-Once the business logic is implemented, add:
-- `src/app.py` — a file with intentional TODO/FIXME/HACK comments.
-- `logs/ci.log` — a realistic CI log with errors and warnings.
-- Real version-pinned `requirements.txt` and `package.json`.
+| Tool | Key result |
+|------|-----------|
+| `scan_tech_debt` | 9 findings, 5 HIGH/CRITICAL |
+| `diagnose_ci_logs` (`pytest_failure.log`) | `test_assertion_failure`, confidence 0.95 |
+| `analyze_dependencies` | 7 version risks, 1 unknown license |
+| `project_health_report` | score ~0.66, status `needs_attention` |
+
+See `DEMO.md` in the project root for the full step-by-step walkthrough.

@@ -107,13 +107,13 @@ All settings are overridable via `REPOHEALTH_*` environment variables.
 | Setting | Default | Description |
 |---------|---------|-------------|
 | `REPOHEALTH_PORT` | `8000` | Server port |
-| `REPOHEALTH_ALLOWED_ROOTS` | `["/workspace"]` | Paths the server may access |
+| `REPOHEALTH_ALLOWED_ROOTS` | `["/workspace", "/demo_project"]` | Paths the server may access |
 | `REPOHEALTH_SCORE_THRESHOLD_HEALTHY` | `0.8` | Score above which status is `"healthy"` |
 | `REPOHEALTH_SCORE_THRESHOLD_WARNING` | `0.5` | Lower bound for `"needs_attention"` status (score between this value and `THRESHOLD_HEALTHY`); below this threshold → `"critical"` |
 
 ## Demo Project
 
-`demo_project/` contains a realistic fixture repository with intentional tech debt, a failing pytest log, and mixed dependency manifests.  It is baked into the Docker image at `/demo_project`.
+`demo_project/` contains a realistic fixture repository with intentional tech debt, a failing pytest log, and mixed dependency manifests.  It is baked into the Docker image at `/demo_project` and is accessible by default (the server's `allowed_roots` includes `/demo_project`).
 
 | Fixture | Purpose |
 |---------|---------|
@@ -128,3 +128,4 @@ See `DEMO.md` for a complete 3–5 minute walkthrough using MCP Inspector.
 ## License
 
 MIT
+ 

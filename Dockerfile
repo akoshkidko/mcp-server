@@ -17,7 +17,7 @@ RUN pip install --no-cache-dir --upgrade pip \
 # Copy source
 COPY src/ ./src/
 COPY tests/ ./tests/
-COPY demo_project/ ./demo_project/
+COPY demo_project/ /demo_project/
 
 # Non-root user for security
 RUN useradd --create-home appuser && chown -R appuser /app
