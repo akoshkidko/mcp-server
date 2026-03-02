@@ -28,4 +28,7 @@ EXPOSE 8000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
     CMD python -c "import httpx; httpx.get('http://localhost:8000/health').raise_for_status()"
 
-CMD ["repohealth-serve"]
+# CLI router handles: serve | smoke
+# Default CMD is "serve" so bare `docker run IMAGE` starts the server.
+ENTRYPOINT ["python", "-m", "repohealth_mcp.cli"]
+CMD ["serve"]

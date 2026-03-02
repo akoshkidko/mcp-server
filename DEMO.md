@@ -7,14 +7,20 @@ This document walks through a demonstration of the RepoHealth MCP server using t
 - Docker installed, or Python 3.11+ with the package installed locally.
 - The server running on `http://localhost:8000`.
 
-## 1. Start the Server
+## 1. Build and Start the Server
 
 ```bash
-# Docker
+# Build the image
 docker build -t repohealth-mcp .
-docker run -p 8000:8000 repohealth-mcp
 
-# or locally
+# Start the server
+docker run --rm -p 8000:8000 repohealth-mcp serve
+```
+
+Or locally without Docker:
+
+```bash
+pip install -e ".[dev]"
 repohealth-serve
 ```
 
@@ -25,13 +31,27 @@ curl http://localhost:8000/health
 # {"status": "ok", "service": "repohealth-mcp", "version": "0.1.0"}
 ```
 
-## 3. Run Smoke Tests
+## 3. Run Smoke Checks
 
 ```bash
+# Docker
+docker run --rm repohealth-mcp smoke
+
+# Local
 repohealth-smoke
-# [OK] demo_project/ found
-# [OK] analyzers importable
-# Smoke tests passed.
+```
+
+Expected output:
+
+```
+RepoHealth MCP — smoke tests
+========================================
+[OK  ] demo_project exists: demo_project/ found at ...
+[OK  ] analyzers importable: all analyzer modules imported successfully
+[OK  ] core importable: all core modules imported successfully
+[OK  ] app creates cleanly: FastAPI app created: repohealth-mcp v0.1.0
+========================================
+Smoke tests passed.
 ```
 
 ## 4. Connect MCP Inspector
@@ -51,6 +71,7 @@ You can also verify the endpoint manually:
 ```bash
 curl -s -X POST http://localhost:8000/mcp \
   -H "Content-Type: application/json" \
+  -H "Accept: application/json, text/event-stream" \
   -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2024-11-05","capabilities":{},"clientInfo":{"name":"curl","version":"0"}}}'
 ```
 
@@ -68,8 +89,7 @@ Scans a project directory for TODO / FIXME / HACK markers.
   "tool": "scan_tech_debt",
   "arguments": {
     "project_path": "/workspace/demo_project",
-    "include_globs": ["**/*.py"],
-    "severity_filter": "all"
+    "include_globs": ["**/*.py"]
   }
 }
 ```
@@ -113,7 +133,7 @@ Runs all analyses and returns an aggregated score.
 }
 ```
 
-## 5. Expected Output Shape
+## 6. Expected Output Shape
 
 ```json
 {

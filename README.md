@@ -15,6 +15,7 @@ A local Dockerized MCP (Model Context Protocol) server that helps developers qui
 
 ```
 src/repohealth_mcp/
+├── cli.py              # CLI router (serve | smoke subcommands)
 ├── app.py              # FastAPI application factory
 ├── server.py           # Uvicorn entrypoint
 ├── smoke.py            # Smoke test runner
@@ -49,8 +50,17 @@ src/repohealth_mcp/
 ### Docker
 
 ```bash
+# Build
 docker build -t repohealth-mcp .
-docker run -p 8000:8000 -v /path/to/your/repo:/workspace repohealth-mcp
+
+# Start server (default: bare run also starts serve)
+docker run --rm -p 8000:8000 repohealth-mcp serve
+
+# Run smoke checks
+docker run --rm repohealth-mcp smoke
+
+# Mount a local repo for analysis
+docker run --rm -p 8000:8000 -v /path/to/your/repo:/workspace repohealth-mcp serve
 ```
 
 ### Local Development
@@ -76,19 +86,30 @@ Connect [MCP Inspector](https://github.com/modelcontextprotocol/inspector) to:
 http://localhost:8000/mcp
 ```
 
-The MCP endpoint is a **Streamable HTTP** transport — it accepts both `POST /mcp`
-(JSON-RPC requests) and `GET /mcp` (SSE server-notification stream).
+Select **Streamable HTTP** as the transport type.  
+The MCP endpoint accepts both `POST /mcp` (JSON-RPC requests) and `GET /mcp` (SSE notification stream).
+
+## CLI Reference
+
+The container ENTRYPOINT is `python -m repohealth_mcp.cli`.
+
+| Command | Behaviour |
+|---------|-----------|
+| `docker run IMAGE` | Defaults to `serve` — starts the server on port 8000 |
+| `docker run IMAGE serve` | Starts the MCP/HTTP server on port 8000 |
+| `docker run IMAGE smoke` | Runs smoke checks; exits 0 on pass, 1 on fail |
 
 ## Configuration
 
-See `src/repohealth_mcp/config.py` for all tuneable settings.
+See `src/repohealth_mcp/config.py` for all tuneable settings.  
+All settings are overridable via `REPOHEALTH_*` environment variables.
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| `PORT` | `8000` | Server port |
-| `ALLOWED_ROOTS` | `["/workspace"]` | Paths the server may access |
-| `DEBT_SCORE_THRESHOLD_WARN` | `0.6` | Health score that triggers a warning |
-| `DEBT_SCORE_THRESHOLD_CRITICAL` | `0.3` | Health score that triggers a critical alert |
+| `REPOHEALTH_PORT` | `8000` | Server port |
+| `REPOHEALTH_ALLOWED_ROOTS` | `["/workspace"]` | Paths the server may access |
+| `REPOHEALTH_SCORE_THRESHOLD_HEALTHY` | `0.8` | Score above which status is "healthy" |
+| `REPOHEALTH_SCORE_THRESHOLD_WARNING` | `0.5` | Score above which status is "warning" |
 
 ## Demo Project
 
