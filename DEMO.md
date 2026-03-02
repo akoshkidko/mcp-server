@@ -32,9 +32,11 @@ npx @modelcontextprotocol/inspector
 - **URL** → `http://localhost:8000/mcp`
 - Нажать **Connect**
 
+После подключения перейдите во вкладку **Tools** и нажмите кнопку **List Tools**.
+
 Должны появиться 4 инструмента: `scan_tech_debt`, `diagnose_ci_logs`, `analyze_dependencies`, `project_health_report`.
 
-> Все пути ниже (`/demo_project/...`) — это пути **внутри контейнера**. Вводите их точно как написано.
+> Все пути ниже (`/demo_project/...`) — это пути **внутри контейнера**. Вводите их точно как написано прямо в поле ввода — без фигурных скобок и кавычек.
 
 ---
 
@@ -42,12 +44,15 @@ npx @modelcontextprotocol/inspector
 
 Нажмите на инструмент `scan_tech_debt` в списке.
 
-**Что ввести:**
-```json
-{
-  "project_path": "/demo_project"
-}
-```
+**Что ввести в поля:**
+
+| Поле | Значение |
+|------|---------|
+| `project_path` | `/demo_project` |
+| `include_globs` | оставить пустым |
+| `exclude_globs` | оставить пустым |
+
+Нажать **Run Tool**.
 
 **Ожидаемый результат:**
 ```json
@@ -80,12 +85,13 @@ npx @modelcontextprotocol/inspector
 
 Нажмите на инструмент `diagnose_ci_logs`.
 
-**Что ввести:**
-```json
-{
-  "log_path": "/demo_project/logs/pytest_failure.log"
-}
-```
+**Что ввести в поля:**
+
+| Поле | Значение |
+|------|---------|
+| `log_path` | `/demo_project/logs/pytest_failure.log` |
+
+Нажать **Run Tool**.
 
 **Ожидаемый результат:**
 ```json
@@ -113,12 +119,13 @@ npx @modelcontextprotocol/inspector
 
 Нажмите на инструмент `analyze_dependencies`.
 
-**Что ввести:**
-```json
-{
-  "project_path": "/demo_project"
-}
-```
+**Что ввести в поля:**
+
+| Поле | Значение |
+|------|---------|
+| `project_path` | `/demo_project` |
+
+Нажать **Run Tool**.
 
 **Ожидаемый результат:**
 ```json
@@ -152,13 +159,14 @@ npx @modelcontextprotocol/inspector
 
 Нажмите на инструмент `project_health_report`.
 
-**Что ввести:**
-```json
-{
-  "project_path": "/demo_project",
-  "ci_log_path":  "/demo_project/logs/pytest_failure.log"
-}
-```
+**Что ввести в поля:**
+
+| Поле | Значение |
+|------|---------|
+| `project_path` | `/demo_project` |
+| `ci_log_path` | `/demo_project/logs/pytest_failure.log` |
+
+Нажать **Run Tool**.
 
 **Ожидаемый результат:**
 ```json
@@ -217,20 +225,24 @@ Smoke tests passed.
 
 | Проблема | Решение |
 |----------|---------|
-| `Path ... is outside all allowed roots` | Убедитесь, что вводите `/demo_project`, а не `/app` или другой путь |
-| Inspector не видит инструменты | Проверьте, что сервер запущен, и подключайтесь через **Streamable HTTP** к `http://localhost:8000/mcp` |
+| `Path ... is outside all allowed roots` | Убедитесь, что вводите `/demo_project` — именно так, без изменений |
+| Inspector не видит инструменты | Проверьте, что сервер запущен, перейдите в **Tools** и нажмите **List Tools** |
 | `confidence` меньше ожидаемого | Убедитесь, что используете именно `pytest_failure.log` — другие логи классифицируются иначе |
 
 ---
 
 ## Дополнительно — другие логи
 
-```json
-{ "log_path": "/demo_project/logs/npm_build_failure.log" }
-```
+Попробуйте вызвать `diagnose_ci_logs` с другими логами:
+
+| Поле | Значение |
+|------|---------|
+| `log_path` | `/demo_project/logs/npm_build_failure.log` |
+
 → `category: "build_error"`, ошибки связанные с `legacy-lib`.
 
-```json
-{ "log_path": "/demo_project/logs/docker_build_failure.log" }
-```
+| Поле | Значение |
+|------|---------|
+| `log_path` | `/demo_project/logs/docker_build_failure.log` |
+
 → `category: "build_error"`, ошибки установки pip.
