@@ -306,7 +306,7 @@ Smoke tests passed.
 
 ## Анализ своего репозитория
 
-Чтобы анализировать свой проект, а не демо-данные, примонтируйте его при запуске:
+Это альтернативный вариант **шага 3**. Вместо обычного запуска используйте эту команду:
 
 ```bash
 docker run --rm -p 8000:8000 \
@@ -314,9 +314,9 @@ docker run --rm -p 8000:8000 \
   repohealth-mcp serve
 ```
 
-Замените `/Users/your-name/Projects/my-repo` на реальный путь к вашему репозиторию на компьютере.
+Замените `/Users/your-name/Projects/my-repo` на реальный путь к вашему репозиторию на компьютере. Например: `/Users/aleksej/Projects/my-app`.
 
-После этого в MCP Inspector используйте `/workspace` вместо `/demo_project`:
+Шаги 4–7 остаются теми же. Единственное отличие — в MCP Inspector вместо `/demo_project` вводите `/workspace`:
 
 ```
 project_path: /workspace
