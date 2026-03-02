@@ -1,47 +1,55 @@
-# RepoHealth MCP — Demo Guide
+# RepoHealth MCP — Демо
 
-End-to-end walkthrough using the bundled `demo_project/` fixtures.  
-Estimated time: **3–5 minutes**.
+Пошаговый сценарий на основе встроенного демо-проекта.  
+Примерное время: **3–5 минут**.
 
 ---
 
-## Prerequisites
+## Подготовка
+
+Выполните три команды в терминале:
 
 ```bash
-# 1. Build the image
+# 1. Собрать образ (точка в конце обязательна)
 docker build -t repohealth-mcp .
 
-# 2. Start the server (demo_project is baked into the image at /demo_project)
+# 2. Запустить сервер (оставьте терминал открытым)
 docker run --rm -p 8000:8000 repohealth-mcp serve
 
-# 3. Verify it's alive
+# 3. Во втором терминале проверить, что сервер работает
 curl http://localhost:8000/health
 # → {"status":"ok","service":"repohealth-mcp","version":"0.1.0"}
 ```
 
-Open **MCP Inspector** → connect to `http://localhost:8000/mcp`  
-(Transport type: **Streamable HTTP**)
+Затем откройте MCP Inspector:
 
-You should see 4 tools: `scan_tech_debt`, `diagnose_ci_logs`,
-`analyze_dependencies`, `project_health_report`.
+```bash
+npx @modelcontextprotocol/inspector
+```
 
-> All paths below use `/demo_project` — the path inside the container.
-> If you mount an external repo, substitute `/workspace/your-repo`.
+В браузере:
+- **Transport Type** → `Streamable HTTP`
+- **URL** → `http://localhost:8000/mcp`
+- Нажать **Connect**
+
+Должны появиться 4 инструмента: `scan_tech_debt`, `diagnose_ci_logs`, `analyze_dependencies`, `project_health_report`.
+
+> Все пути ниже (`/demo_project/...`) — это пути **внутри контейнера**. Вводите их точно как написано.
 
 ---
 
-## Step 1 — scan_tech_debt
+## Шаг 1 — scan_tech_debt
 
-**Tool:** `scan_tech_debt`
+Нажмите на инструмент `scan_tech_debt` в списке.
 
-**Arguments:**
+**Что ввести:**
 ```json
 {
   "project_path": "/demo_project"
 }
 ```
 
-**Expected result (abridged):**
+**Ожидаемый результат:**
 ```json
 {
   "total_findings": 9,
@@ -61,26 +69,25 @@ You should see 4 tools: `scan_tech_debt`, `diagnose_ci_logs`,
 }
 ```
 
-**What to verify:**
-- `total_findings` ≥ 6 (actual: **9**)
-- `by_severity.critical + by_severity.high` ≥ 1 (actual: **5**)
-- `src/auth.py` contains a FIXME (auth bypass) and a BUG (token expiry)
-- `src/service.py` contains a HACK marker
+**Что проверить:**
+- `total_findings` ≥ 6 (в демо: **9**)
+- `critical` + `high` ≥ 1 (в демо: **5**)
+- В `src/auth.py` есть FIXME (обход авторизации) и BUG (нет срока жизни токена)
 
 ---
 
-## Step 2 — diagnose_ci_logs
+## Шаг 2 — diagnose_ci_logs
 
-**Tool:** `diagnose_ci_logs`
+Нажмите на инструмент `diagnose_ci_logs`.
 
-**Arguments:**
+**Что ввести:**
 ```json
 {
   "log_path": "/demo_project/logs/pytest_failure.log"
 }
 ```
 
-**Expected result:**
+**Ожидаемый результат:**
 ```json
 {
   "category": "test_assertion_failure",
@@ -95,25 +102,25 @@ You should see 4 tools: `scan_tech_debt`, `diagnose_ci_logs`,
 }
 ```
 
-**What to verify:**
+**Что проверить:**
 - `category == "test_assertion_failure"` ✓
-- `confidence >= 0.90` (actual: **0.95**) ✓
-- Error lines include `E       assert 500 == 200` and the `FAILED` summary line
+- `confidence >= 0.90` (в демо: **0.95**) ✓
+- В ошибках есть строка `E       assert 500 == 200`
 
 ---
 
-## Step 3 — analyze_dependencies
+## Шаг 3 — analyze_dependencies
 
-**Tool:** `analyze_dependencies`
+Нажмите на инструмент `analyze_dependencies`.
 
-**Arguments:**
+**Что ввести:**
 ```json
 {
   "project_path": "/demo_project"
 }
 ```
 
-**Expected result (key fields):**
+**Ожидаемый результат:**
 ```json
 {
   "manifests_found": ["requirements.txt", "pyproject.toml", "package.json"],
@@ -132,21 +139,20 @@ You should see 4 tools: `scan_tech_debt`, `diagnose_ci_logs`,
 }
 ```
 
-> `requests` and `tenacity` appear twice (once from `requirements.txt`, once from `pyproject.toml`) — this is expected; they represent the same deps declared in two manifests.
+> `requests` и `tenacity` встречаются дважды — они объявлены и в `requirements.txt`, и в `pyproject.toml`. Это ожидаемое поведение.
 
-**What to verify:**
-- `manifests_found` contains `requirements.txt`, `pyproject.toml`, and `package.json`
-- `version_risk_count >= 2` (actual: **7**) ✓
-- `unknown_license_count >= 1` (actual: **1** — `legacy-lib`) ✓
-- `legacy-lib` has `"license": "unknown"` and `"risk_flags": ["wildcard"]`
+**Что проверить:**
+- `manifests_found` содержит все три манифеста ✓
+- `version_risk_count >= 2` (в демо: **7**) ✓
+- `legacy-lib` имеет `"license": "unknown"` и `"risk_flags": ["wildcard"]` ✓
 
 ---
 
-## Step 4 — project_health_report
+## Шаг 4 — project_health_report
 
-**Tool:** `project_health_report`
+Нажмите на инструмент `project_health_report`.
 
-**Arguments:**
+**Что ввести:**
 ```json
 {
   "project_path": "/demo_project",
@@ -154,7 +160,7 @@ You should see 4 tools: `scan_tech_debt`, `diagnose_ci_logs`,
 }
 ```
 
-**Expected result:**
+**Ожидаемый результат:**
 ```json
 {
   "health_score": 0.657,
@@ -178,21 +184,21 @@ You should see 4 tools: `scan_tech_debt`, `diagnose_ci_logs`,
 }
 ```
 
-**What to verify:**
+**Что проверить:**
 - `health_status == "needs_attention"` ✓
-- `health_score` between 0.5 and 0.8 (actual: **0.657**) ✓
-- `top_issues` has ≥ 3 entries (actual: **6**) ✓
-- `recommended_actions` has ≥ 3 entries (actual: **6**) ✓
+- `health_score` между 0.5 и 0.8 (в демо: **0.657**) ✓
+- `top_issues` содержит ≥ 3 записи (в демо: **6**) ✓
+- `recommended_actions` содержит ≥ 3 записи (в демо: **6**) ✓
 
 ---
 
-## Smoke Checks
+## Smoke-проверка
 
 ```bash
 docker run --rm repohealth-mcp smoke
 ```
 
-Expected output:
+Ожидаемый вывод:
 
 ```
 RepoHealth MCP — smoke tests
@@ -207,25 +213,24 @@ Smoke tests passed.
 
 ---
 
-## Troubleshooting
+## Решение проблем
 
-| Problem | Fix |
-|---------|-----|
-| `InvalidProjectPathError` | The container path is `/demo_project` (not `/workspace/demo_project`). Use the exact path shown above. |
-| Inspector shows no tools | Confirm the server is running and connect to `http://localhost:8000/mcp` with **Streamable HTTP** transport. |
-| `406 Not Acceptable` from curl | Add `-H "Accept: application/json, text/event-stream"` to your curl command. |
-| `confidence` lower than expected | Verify you're using `pytest_failure.log` — the other log files are classified differently. |
+| Проблема | Решение |
+|----------|---------|
+| `Path ... is outside all allowed roots` | Убедитесь, что вводите `/demo_project`, а не `/app` или другой путь |
+| Inspector не видит инструменты | Проверьте, что сервер запущен, и подключайтесь через **Streamable HTTP** к `http://localhost:8000/mcp` |
+| `confidence` меньше ожидаемого | Убедитесь, что используете именно `pytest_failure.log` — другие логи классифицируются иначе |
 
 ---
 
-## Optional: Test Other Log Files
+## Дополнительно — другие логи
 
 ```json
 { "log_path": "/demo_project/logs/npm_build_failure.log" }
 ```
-→ `category: "network_error"` or `"build_error"`, errors related to `legacy-lib`.
+→ `category: "build_error"`, ошибки связанные с `legacy-lib`.
 
 ```json
 { "log_path": "/demo_project/logs/docker_build_failure.log" }
 ```
-→ `category: "build_error"`, errors related to pip install failure.
+→ `category: "build_error"`, ошибки установки pip.
